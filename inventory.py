@@ -48,6 +48,16 @@ class Inventory:
         self._items[name].quantity -= amount
         return self._items[name].quantity
 
+    def low_stock_items(self, threshold: int) -> list[str]:
+        """คืนรายชื่อสินค้าที่จำนวนคงเหลือไม่เกิน threshold เรียงตามชื่อ"""
+        if threshold < 0:
+            raise ValueError("threshold must be non-negative")
+        return sorted(
+            name
+            for name, item in self._items.items()
+            if item.quantity <= threshold
+        )
+
     def get_total_value(self) -> float:
         """คำนวณมูลค่ารวมของสินค้าทั้งหมดในคลัง"""
         return sum(
