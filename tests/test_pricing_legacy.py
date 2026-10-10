@@ -2,22 +2,22 @@ import datetime
 
 import pytest
 
-import pricing_legacy
-from pricing_legacy import calc
+import pricing_refactored
+from pricing_refactored import calc
 
 
 @pytest.fixture(autouse=True)
 def reset_pricing_state():
-    pricing_legacy.member_points.clear()
-    pricing_legacy.LOG.clear()
+    pricing_refactored.member_points.clear()
+    pricing_refactored.LOG.clear()
     yield
-    pricing_legacy.member_points.clear()
-    pricing_legacy.LOG.clear()
+    pricing_refactored.member_points.clear()
+    pricing_refactored.LOG.clear()
 
 
 def test_regular_single_item_records_total_and_log():
     assert calc([("Tea", 2, 10.0)]) == 21.4
-    assert pricing_legacy.LOG == [(None, 21.4)]
+    assert pricing_refactored.LOG == [(None, 21.4)]
 
 
 @pytest.mark.parametrize(
@@ -39,8 +39,8 @@ def test_zero_quantity_item_is_skipped():
 
 def test_member_discount_records_points_and_final_amount():
     assert calc([("Tea", 100, 2.0)], member="Somchai") == 182.97
-    assert pricing_legacy.member_points == {"Somchai": 1}
-    assert pricing_legacy.LOG == [("Somchai", 182.97)]
+    assert pricing_refactored.member_points == {"Somchai": 1}
+    assert pricing_refactored.LOG == [("Somchai", 182.97)]
 
 
 @pytest.mark.parametrize(
@@ -60,12 +60,23 @@ def test_coupon_discount_below_zero_is_clamped_before_tax():
     assert calc([("Tea", 1, 10.0)], coupon="SAVE50") == 0.0
 
 
+def test_newyear_without_date_uses_current_date(monkeypatch):
+    class FixedDate(datetime.date):
+        @classmethod
+        def today(cls):
+            return cls(2026, 1, 15)
+
+    monkeypatch.setattr(pricing_refactored.datetime, "date", FixedDate)
+
+    assert calc([("Tea", 10, 10.0)], coupon="NEWYEAR") == 85.6
+
+
 def test_member_points_and_log_accumulate_between_calls():
     assert calc([("Tea", 100, 2.0)], member="Somchai") == 182.97
     assert calc([("Tea", 100, 2.0)], member="Somchai") == 182.97
 
-    assert pricing_legacy.member_points == {"Somchai": 2}
-    assert pricing_legacy.LOG == [
+    assert pricing_refactored.member_points == {"Somchai": 2}
+    assert pricing_refactored.LOG == [
         ("Somchai", 182.97),
         ("Somchai", 182.97),
     ]
