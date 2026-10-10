@@ -52,11 +52,12 @@ class Inventory:
         """คืนรายชื่อสินค้าที่จำนวนคงเหลือไม่เกิน threshold เรียงตามชื่อ"""
         if threshold < 0:
             raise ValueError("threshold must be non-negative")
-        return sorted(
+        qualifying_items = [
             name
             for name, item in self._items.items()
             if item.quantity <= threshold
-        )
+        ]
+        return sorted(qualifying_items)
 
     def get_total_value(self) -> float:
         """คำนวณมูลค่ารวมของสินค้าทั้งหมดในคลัง"""
