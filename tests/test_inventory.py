@@ -120,3 +120,50 @@ def test_sell_text_amount_is_rejected_without_changing_stock():
         inventory.sell("Coffee", "2")
 
     assert inventory._items["Coffee"].quantity == 5
+
+
+def test_sell_boolean_amount_is_rejected_without_changing_stock():
+    inventory = Inventory()
+    inventory.add_item("Coffee", 5, 10.0)
+
+    with pytest.raises(TypeError):
+        inventory.sell("Coffee", True)
+
+    assert inventory._items["Coffee"].quantity == 5
+
+
+@pytest.mark.parametrize(
+    ("name", "quantity", "price"),
+    [
+        ("", 1, 10.0),
+        ("   ", 1, 10.0),
+        ("Coffee", -1, 10.0),
+        ("Coffee", 1, 0.0),
+    ],
+)
+def test_inventory_item_rejects_invalid_fields(name, quantity, price):
+    with pytest.raises(ValueError):
+        Inventory().add_item(name, quantity, price)
+
+
+def test_duplicate_add_and_restock_paths():
+    inventory = Inventory()
+    inventory.add_item("Coffee", 5, 10.0)
+
+    with pytest.raises(ValueError, match="มีอยู่ในระบบแล้ว"):
+        inventory.add_item("Coffee", 1, 10.0)
+    with pytest.raises(KeyError, match="Tea"):
+        inventory.restock("Tea", 1)
+    with pytest.raises(ValueError, match="มากกว่าศูนย์"):
+        inventory.restock("Coffee", 0)
+
+    assert inventory.restock("Coffee", 3) == 8
+
+
+def test_total_value_for_empty_and_populated_inventory():
+    inventory = Inventory()
+    assert inventory.get_total_value() == 0
+
+    inventory.add_item("Coffee", 2, 10.0)
+    inventory.add_item("Tea", 3, 5.0)
+    assert inventory.get_total_value() == 35.0
