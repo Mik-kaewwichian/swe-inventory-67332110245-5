@@ -38,6 +38,8 @@ class Inventory:
         """ขายสินค้า ลดจำนวน คืนค่าจำนวนคงเหลือ"""
         if name not in self._items:
             raise KeyError(f"ไม่พบสินค้า '{name}' ในระบบ")
+        if isinstance(amount, bool) or not isinstance(amount, int):
+            raise TypeError("จำนวนที่ขายต้องเป็นจำนวนเต็ม")
         if amount <= 0:
             raise ValueError("จำนวนที่ขายต้องมากกว่าศูนย์")
         if self._items[name].quantity < amount:
