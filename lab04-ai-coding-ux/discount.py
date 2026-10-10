@@ -1,4 +1,4 @@
-# discount.py -- โมดูลคิดส่วนลดและสรุปยอด (มี bug จงใจ)
+# discount.py  -- โมดูลคิดส่วนลดและสรุปยอด (มี bug จงใจ)
 
 def apply_discount(price: float, percent: float) -> float:
     """ลดราคาตาม percent (0-100) คืนราคาหลังลด"""

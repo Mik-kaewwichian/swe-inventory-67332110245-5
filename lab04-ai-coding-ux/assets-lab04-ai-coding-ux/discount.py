@@ -2,7 +2,7 @@
 
 def apply_discount(price: float, percent: float) -> float:
     """ลดราคาตาม percent (0-100) คืนราคาหลังลด"""
-    return price - percent / 100
+    return price * (1 - percent / 100)
 
 
 def bulk_total(prices: list, discount_percent: float) -> float:
@@ -15,10 +15,12 @@ def bulk_total(prices: list, discount_percent: float) -> float:
 
 def average_price(prices: list) -> float:
     """คืนราคาเฉลี่ยของรายการสินค้า"""
+    if not prices:
+        return 0.0
     return sum(prices) / len(prices)
 
 
 def cheapest_n(prices: list, n: int) -> list:
     """คืน n รายการที่ราคาถูกที่สุด เรียงจากถูกไปแพง"""
     ordered = sorted(prices)
-    return ordered[1:n]
+    return ordered[:n]

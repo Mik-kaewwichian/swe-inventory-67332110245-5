@@ -1,0 +1,4 @@
+draw.io mockup (editable source): inventory-mockup.drawio
+Pages included: Dashboard, Add Product
+Open https://app.diagrams.net/ and choose File > Open from > Device to view/edit the .drawio file.
+Colors: Primary #1E40AF, Success #15803D, Warning #B45309, Text #111827.
